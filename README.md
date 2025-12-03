@@ -43,7 +43,7 @@ Follow these steps to run the project locally on your machine.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/YourUsername/crop-recommender.git](https://github.com/YourUsername/crop-recommender.git)
+git clone [https://github.com/Rihan786-ctrl/crop-recommender.git](git clone https://github.com/Rihan786-ctrl/crop-recommender.git)
 cd crop-recommender
 2. Create a Virtual Environment
 It's recommended to use a virtual environment to manage dependencies.
