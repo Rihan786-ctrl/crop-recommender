@@ -1,0 +1,6 @@
+Django
+scikit-learn
+pandas
+numpy
+gunicorn
+python-dotenv
