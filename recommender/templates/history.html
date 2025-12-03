@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %} 
+
+
+title{% block title %}User Histroy{% endblock %}
+
+{% block content %}
+    <div class="container mt-4 text-center">
+        <h3 class="mb-4"><i class="fa-solid fa-clock-rotate-left"></i> Prediction History</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-success">
+                    <tr>
+                        <th>#</th>
+                        <th>Date & Time</th>
+                        <th>Predicted Crop</th>
+                        <th>Nitrogen (N)</th>
+                        <th>Phosphorus (P)</th>
+                        <th>Potassium (K)</th>
+                        <th>pH Level</th>
+                        <th>Rainfall (mm)</th>
+                        <th>Temperature (°C)</th>
+                        <th>Humidity (%)</th>
+                        <th>Action</th>
+                        
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pred in prediction %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ pred.created_at|date:"M d, Y H:i" }}</td>
+                        <td><span class="badge bg-success"> {{ pred.predicted_label|title }}</span></td>
+                        <td>{{ pred.N }}</td>
+                        <td>{{ pred.P }}</td>
+                        <td>{{ pred.K }}</td>
+                        <td>{{ pred.ph }}</td>
+                        <td>{{ pred.rainfall }}</td>
+                        <td>{{ pred.temperature }}</td>
+                        <td>{{ pred.humidity }}</td>
+                        <td>
+                            {% if pred.id %}
+                            <form action="{% url 'user_delete_prediction' pred.id %}" method="post" onsubmit="return confirm('Delete this entry?');">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete this prediction"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                            {% else %}
+                              <button class="btn btn-sm btn-outline-secondary" disabled>N/A</button>
+                            {% endif %}
+                          </td>
+                        
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center">No prediction history found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

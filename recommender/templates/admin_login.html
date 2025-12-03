@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %} 
+
+
+title{% block title %} Admin Login {% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-lg border-0 overflow-hidden">
+            <div class="row">
+                <div class="col-md-6 position-relative d-none d-md-block" style="background:url('/static/images/image3.jpg') center/cover no-repeat;">
+                    <div class="position-absolute bottom-0 w-100 h-100">
+
+                    </div>
+                    <div class="position-absolute bottom-0 text-white p-4">
+                        <h3 class="mb-2"> <span class="fw-bold">Crop Recommender</span></h3>
+                    </div>
+                </div>
+                <div class="col-md-6 bg-white">
+                    <div class="p-5">
+                        <h3 class="mb-3"><i class="fa-solid fa-user-plus"></i>  Admin Login</h3>
+                        <form action="" method="post" id="loginForm">
+                            {% csrf_token %}
+
+                           
+                            <div class="col-md-12">
+                                <label class="form-label">UserName</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-success text-white"><i class="fa-regular fa-envelope"></i></span>
+                                    <input type="text" name="username" class="form-control" placeholder="Enter username" required/>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Password <span class="text-muted small">(min 6 char)</span></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-success text-white"><i class="fa-solid fa-key"></i></span>
+                                    <input type="password" name="password" id="pwd1" class="form-control" placeholder="********" required/>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglepwd" title="Show/Hide">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            
+                           </div>
+                           <button class="btn btn-success mt-3 w-100 mb-4" type="submit" id="signupBtn">
+                            <span>Login</span>
+                           </button>
+
+                           <div class="text-center mb-4">
+                            <span class="text-muted small">Back to site</span>
+                                <a href="{% url 'home' %}" class="small text-decoration-none ms-1"><i class="fa-solid fa-house"></i> Home</a>
+                           </div>
+                        </form>
+                    </div>
+                </div>
+        </div>
+        
+    </div>
+    
+</div>
+{% endblock %}

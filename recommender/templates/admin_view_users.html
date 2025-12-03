@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %} 
+
+
+title{% block title %} Users {% endblock %}
+
+{% block content %}
+    <div class="container mt-4 text-center">
+        <h3 class="mb-4"><i class="fa-solid fa-users"></i> Registered Users</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-success">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact No</th>
+                        <th>Joined At</th>
+                        <th>Action</th>
+                        
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{u.first_name}}</td>
+                        <td>{{u.username}}</td>
+                        <td>{{u.userprofile.phone}}</td>
+                        <td>{{u.date_joined|date:"M d, Y"}}</td>
+                        
+                        <td>
+                            {% if u.id %}
+                            <form action="{% url 'admin_user_delete' u.id %}" method="post" onsubmit="return confirm('Delete this entry?');">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete this prediction"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                            {% else %}
+                              <button class="btn btn-sm btn-outline-secondary" disabled>N/A</button>
+                            {% endif %}
+                          </td>
+                        
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center">No prediction history found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

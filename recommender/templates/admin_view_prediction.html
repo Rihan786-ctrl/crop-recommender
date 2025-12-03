@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Predictions{% endblock %}
+
+{% block content %}
+<div class="container mt-4 text-center">
+    <h3 class="mb-4"><i class="fa-solid fa-seedling"></i> Prediction History</h3>
+
+    <!-- use GET for filters (no CSRF needed and bookmarkable) -->
+    <form method="get" class="card card-body shadow-sm border-0 mb-3" id="filterForm">
+        <div class="row gap-2">
+            <div class="col-md-4">
+                <label for="crop-select" class="form-label">Crop</label>
+                <select id="crop-select" name="crop" class="form-select">
+                    <option value="" {% if not selected_crop %}selected{% endif %}>-- All Crops --</option>
+                    {% for crop in crops %}
+                    <option value="{{ crop }}" {% if selected_crop == crop %}selected{% endif %}>{{ crop|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="start-date" class="form-label">Start Date</label>
+                <input type="date" id="start-date" name="start" class="form-control" value="{{ start_date }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end-date" class="form-label">End Date</label>
+                <input type="date" id="end-date" name="end" class="form-control" value="{{ end_date }}">
+            </div>
+            <div class="col-md-2 d-flex flex-column gap-2">
+                <button type="submit" class="btn btn-success"><i class="fa-solid fa-filter"></i> Filter</button>
+                <button type="button" id="btnClearFilters" class="btn btn-outline-secondary"><i class="fa-solid fa-eraser"></i> Clear</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-success">
+                <tr>
+                    <th>#</th>
+                    <th>Date & Time</th>
+                    <th>User</th>
+                    <th>Crop</th>
+                    <th>N</th>
+                    <th>P</th>
+                    <th>K</th>
+                    <th>pH</th>
+                    <th>Rainfall</th>
+                    <th>Temp</th>
+                    <th>Humidity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pred in qs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ pred.created_at|date:"M d, Y H:i" }}</td>
+                    <td>{{ pred.user.username }}</td>
+                    <td><span class="badge bg-success"> {{ pred.predicted_label|title }}</span></td>
+                    <td>{{ pred.N }}</td>
+                    <td>{{ pred.P }}</td>
+                    <td>{{ pred.K }}</td>
+                    <td>{{ pred.ph }}</td>
+                    <td>{{ pred.rainfall }}</td>
+                    <td>{{ pred.temperature }}</td>
+                    <td>{{ pred.humidity }}</td>
+                    <td>
+                        <form action="{% url 'admin_prediction_delete_view' pred.id %}" method="post" onsubmit="return confirm('Delete this entry?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="12" class="text-center">No prediction history found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('btnClearFilters')?.addEventListener('click', function(){
+    const form = document.getElementById('filterForm');
+    if (!form) return;
+    form.querySelector('[name="crop"]').value = '';
+    form.querySelector('[name="start"]').value = '';
+    form.querySelector('[name="end"]').value = '';
+    // submit as GET
+    form.submit();
+  });
+});
+</script>
+
+{% endblock %}

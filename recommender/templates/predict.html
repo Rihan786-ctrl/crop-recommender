@@ -1,0 +1,133 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+<title>{% block title %}Predict{% endblock %}</title>
+
+{% block content %}
+    <div class="row g-4">
+        <div class="col-lg-10">
+            <div class = "card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3><i class="fa-solid fa-flask"></i>Crop Recommendation</h3>
+                        <div class="text-muted small d-none d-md-block">
+                           <i class="fa-solid fa-circle-info"></i> Enter numeric values (Humidity 0-100, pH 0-14, Temperature in °C, Rainfall in mm)
+                        </div>
+                    </div>
+                    <hr>
+                    <form method="post" id="predictForm">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            {% for c in feature_order %}
+                                <div class="col-md-4">
+                                    <label for="{{ c }}" class="form-label text-uppercase">{{ c }}</label>
+                                    {% if c == "humidity" %}
+                                        <input type="number" step="any" min="0" max="100" class="form-control" id="{{ c }}" name="{{ c }}" placeholder="e.g., 70" required />
+                                    {% elif c == "ph" %}
+                                        <input type="number" step="any" min="0" max="14" class="form-control" id="{{ c }}" name="{{ c }}" placeholder="e.g., 7" required />
+                                    {% else %}
+                                    <input type="number" step="any" min="0" class="form-control" id="{{ c }}" name="{{ c }}" placeholder="e.g., 90" required />
+                                    
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-4 d-flex gap-3 flex-wrap">
+                            <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-wand-magic-sparkles"></i> Predict</button>
+                            <button id="btnSample" type="button" class="btn btn-outline-secondary px-4">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Use Sample
+                            </button>
+                            <button type="reset" class="btn btn-outline-danger px-4"><i class="fa-solid fa-arrows-rotate"></i> Reset</button>
+                        </div>
+                    </form>
+
+                    {% if result %}
+                        <hr>
+                        <div class="alert alert-success mt-4" role="alert">
+                            <h4 class="alert-heading"><i class="fa-solid fa-seedling"></i> Recommended Crop: <strong class="text-uppercase">{{ result|title }}</strong></h4>
+                           </div>
+                    {% endif %}
+
+                    {% if last_data %}
+                        <div class="mt-4">
+                            <h5>Last Input Data:</h5>
+                            <ul class="list-group">
+                                {% for key, value in last_data.items %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span class="text-uppercase">{{ key }}</span>
+                                        <span>{{ value }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5><i class="fa-solid fa-info-circle"></i> How to Use</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <p>1. Enter the required soil and environmental parameters in the form.</p>
+                        <p>2. Click the "Predict" button to get the recommended crop.</p>
+                        <p>3. Optionally, use the "Use Sample" button to fill in sample data for testing.</p>
+                        <p>4. Review the recommended crop displayed below the form after submission.</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+<script>
+(function(){
+    const form = document.getElementById('predictForm')
+    const inputs = form ? form.querySelectorAll('input[name]') : [];
+
+    // match the exact input names (case-sensitive)
+    const sample = {
+        "N": 90,
+        "P": 40,
+        "K": 40,
+        "temperature": 20.87,
+        "humidity": 82,
+        "ph": 6.5,
+        "rainfall": 202
+    };
+
+    const sampleBtn = document.getElementById('btnSample');
+    sampleBtn?.addEventListener('click',() => {
+        // debug
+        console.log('Filling sample:', sample);
+
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            // try exact key, then lowercase key fallback
+            if (sample[name] !== undefined) {
+                input.value = sample[name];
+            } else if (sample[name?.toUpperCase?.()] !== undefined) {
+                input.value = sample[name.toUpperCase()];
+            }
+        });
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'info',
+                title: 'Sample Data Filled',
+                text: 'Sample input values have been filled in the form.',
+                position: 'center'
+            });
+        } else {
+            console.warn('SweetAlert2 (Swal) not loaded.');
+        }
+    });
+})();
+</script>
+{% endblock %}

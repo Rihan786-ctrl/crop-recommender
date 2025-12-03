@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row g-4">
+    
+    <!-- Profile Display Card -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <div class="mb-3">
+            <i class="fa-solid fa-user-circle fa-5x text-success"></i>
+          </div>
+          <h5 class="card-title">{{ request.user.first_name|default:request.user.username }}</h5>
+          <p class="text-muted small"><i class="fa-solid fa-envelope"></i> {{ request.user.username }}</p>
+          <p class="text-muted small"><i class="fa-solid fa-phone"></i> {{ profile.phone|default:"Not set" }}</p>
+          <hr />
+          <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i class="fa-solid fa-edit"></i> Edit Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Card -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fa-solid fa-chart-bar text-primary"></i> Statistics</h5>
+          <hr />
+          <div class="mb-3">
+            <small class="text-muted">Total Predictions</small>
+            <div class="h4 text-success">{{ predictions_count }}</div>
+          </div>
+          <div class="mb-3">
+            <small class="text-muted">This Month</small>
+            <div class="h4 text-info">{{ predictions_this_month }}</div>
+          </div>
+          <div>
+            <small class="text-muted">Most Predicted Crop</small>
+            <div class="h5 text-warning">{{ top_crop|default:"N/A" }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Settings Card -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fa-solid fa-gear text-secondary"></i> Account</h5>
+          <hr />
+          <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+              <i class="fa-solid fa-key"></i> Change Password
+            </button>
+            <a href="{% url 'history' %}" class="btn btn-sm btn-outline-info">
+              <i class="fa-solid fa-history"></i> View History
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger">
+              <i class="fa-solid fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: Edit Profile -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fa-solid fa-user-pen"></i> Edit Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close"></button>
+      </div>
+      <form method="post" action="{% url 'profile' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+              <input type="text" class="form-control" name="name" value="{{ request.user.first_name }}" placeholder="Enter full name" required />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email (Read-only)</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+              <input type="email" class="form-control" value="{{ request.user.username }}" disabled title="Email address" placeholder="Email address" />
+            </div>
+            <small class="text-muted">Email cannot be changed</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+              <input type="tel" class="form-control" name="phone" value="{{ profile.phone|default:'' }}" placeholder="Enter phone number" required />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" name="action" value="update_profile" class="btn btn-primary">
+            <i class="fa-solid fa-save"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Change Password -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fa-solid fa-key"></i> Change Password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close"></button>
+      </div>
+      <form method="post" action="{% url 'profile' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Current Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" class="form-control pw-field" name="current_password" placeholder="Enter current password" required />
+              <button type="button" class="btn btn-outline-secondary btn-sm toggle-pw d-none" aria-label="Toggle visibility">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">New Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-lock-open"></i></span>
+              <input type="password" class="form-control pw-field" name="new_password" placeholder="Enter new password" required />
+              <button type="button" class="btn btn-outline-secondary btn-sm toggle-pw d-none" aria-label="Toggle visibility">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-check-double"></i></span>
+              <input type="password" class="form-control pw-field" name="confirm_password" placeholder="Confirm new password" required />
+              <button type="button" class="btn btn-outline-secondary btn-sm toggle-pw d-none" aria-label="Toggle visibility">
+                <i class="fa-solid fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="alert alert-info small">
+            <strong>Password tips:</strong>
+            <ul class="mb-0">
+              <li>Use at least 6 characters (mix upper/lower, numbers, symbols).</li>
+              <li>Avoid common words or easily guessed info (name, email, birthdate).</li>
+              <li>Prefer a passphrase or password manager for unique passwords.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" name="action" value="change_password" class="btn btn-primary">
+            <i class="fa-solid fa-save"></i> Update Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Show toggle button when a pw field receives focus, keep it hidden otherwise
+  const pwFields = Array.from(document.querySelectorAll('.pw-field'));
+  const toggles = Array.from(document.querySelectorAll('.toggle-pw'));
+
+  pwFields.forEach((field, idx) => {
+    const btn = toggles[idx];
+    if (!btn) return;
+
+    field.addEventListener('focus', () => btn.classList.remove('d-none'));
+    field.addEventListener('blur', () => {
+      // keep visible while user types; hide only if empty to honor "hidden button" request
+      if (!field.value) btn.classList.add('d-none');
+    });
+
+    btn.addEventListener('click', () => {
+      const icon = btn.querySelector('i');
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      }
+      field.focus();
+    });
+  });
+});
+</script>
+
+
+{% endblock %}
