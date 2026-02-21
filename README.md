@@ -34,7 +34,16 @@ This project aims to bridge the gap between technology and agriculture, promotin
 
 ## 📂 Project Structure
 
-crop-recommender/ │ ├── crop_site/ # Main Django Project Configuration ├── recommender/ # Main App Logic │ ├── ml/ # Machine Learning Model & Loader │ ├── templates/ # HTML Templates │ ├── static/ # CSS, Images, JS │ ├── models.py # Database Models │ └── views.py # Application Logic ├── manage.py # Django Command Line Utility ├── requirements.txt # Project Dependencies └── README.md # Project Documentation
+crop-recommender/ 
+│ ├── crop_site/ # Main Django Project Configuration 
+   ├── recommender/ # Main App Logic 
+│ ├── ml/ # Machine Learning Model & Loader │ ├── templates/ # HTML Templates 
+│ ├── static/ # CSS, Images, JS 
+│ ├── models.py # Database Models 
+│ └── views.py # Application Logic
+   ├── manage.py # Django Command Line Utility
+   ├── requirements.txt # Project Dependencies 
+   └── README.md # Project Documentation
 
 
 ## ⚙️ Installation & Setup
